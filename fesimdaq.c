@@ -156,7 +156,7 @@ INT frontend_init()
 
 
   
-  int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), FALSE);
+  int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), TRUE);
   printf("Status %i\n",status);
   if (status == DB_STRUCT_MISMATCH) {
     cm_msg(MERROR, "init_simdaqsettings", "Aborting on mismatching /Equipment/SIMDAQ/Settings");
@@ -346,7 +346,9 @@ INT read_trigger_event(char *pevent, INT off)
   for(int j = 0; j < 2; j++){
 
     if (j==1) pulse_position+=  5;
-    int pulse_height = (int)(sampleNormal()*5) +200;  
+    int pulse_height = (int)(sampleNormal()*20) +200;  
+    pulse_height = pulse_height * (1.0 - ((double)pulse_position)/400.0);
+
     for(int i = 0; i < 504; i++){
       uint32_t word = 0;
       uint32_t sample = 400 + (sampleNormal()*2);
