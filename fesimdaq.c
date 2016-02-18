@@ -346,8 +346,8 @@ INT read_trigger_event(char *pevent, INT off)
   for(int j = 0; j < 2; j++){
 
     if (j==1) pulse_position+=  5;
-    int pulse_height = (int)(sampleNormal()*20) +200;  
-    pulse_height = pulse_height * (1.0 - ((double)pulse_position)/400.0);
+    int pulse_height = (int)(sampleNormal()*30) +200;  
+    pulse_height = pulse_height * (1.0 - ((double)pulse_position)/600.0);
 
     for(int i = 0; i < 504; i++){
       uint32_t word = 0;
