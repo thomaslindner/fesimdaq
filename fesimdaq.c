@@ -26,10 +26,10 @@ char *frontend_name = "fesimdaq";
 char *frontend_file_name = __FILE__;
 
 /* frontend_loop is called periodically if this variable is TRUE    */
-BOOL frontend_call_loop = FALSE;
+BOOL frontend_call_loop = TRUE;
 
 /* a frontend status page is displayed with this frequency in ms */
-INT display_period = 000;
+INT display_period = 0;
 
 /* maximum event size produced by this frontend */
 INT max_event_size =  3 * 1024 * 1024;
@@ -164,7 +164,7 @@ INT frontend_init()
     abort();
   }
 
-   cm_register_deferred_transition(TR_STOP, wait_end_cycle);
+  cm_register_deferred_transition(TR_STOP, wait_end_cycle);
    return SUCCESS;
 }
 
@@ -216,7 +216,8 @@ INT frontend_loop()
 {
    /* if frontend_call_loop is true, this routine gets called when
       the frontend is idle or once between every event */
-   return SUCCESS;
+  usleep(10000);
+  return SUCCESS;
 }
 
 /*------------------------------------------------------------------*/
@@ -244,6 +245,7 @@ extern "C" { INT poll_event(INT source, INT count, BOOL test)
             return 1;
    }
 
+   usleep(1000);
    return 0;
 }
 }
@@ -412,6 +414,7 @@ INT read_trigger_event(char *pevent, INT off)
   printf("End sleep. time %f\n", time);
   */
   
+  usleep(10000);
   return bk_size(pevent);
 }
 
