@@ -12,6 +12,7 @@ Example period frontend
 #include <stdint.h>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 /* make frontend functions callable from the C framework */
 #ifdef __cplusplus
