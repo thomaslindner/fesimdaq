@@ -299,23 +299,23 @@ INT read_trigger_event(char *pevent, INT off)
   // Write the bank header to the bank, containing the number of triggers
   *pdata32++ = 0xfa000200;
 
-  int sample = (int)(sampleNormal()*80)+1200;
+  int sample = floor(sampleNormal()*80)+1200;
   if((rand() % 100) > 80) sample += 200;
   *pdata32++ = 0xf800406b + sample;
 
-  int sample2 = (int)(sampleNormal()*120)+1000;
+  int sample2 = floor(sampleNormal()*120)+1000;
   *pdata32++ = 0xf801405e + sample2;
 
-  int sample3 = (int)(sampleNormal()*100)+1000;
+  int sample3 = floor(sampleNormal()*100)+1000;
   *pdata32++ = 0xf802405e + sample3;
 
-  int sample4 = (int)(sampleNormal()*20)+950;
+  int sample4 = floor(sampleNormal()*20)+950;
   *pdata32++ = 0xf803405e + sample4;
 
-  int sample5 = (int)(sampleNormal()*50)+1300;
+  int sample5 = floor(sampleNormal()*50)+1300;
   *pdata32++ = 0xf804405e + sample5;
 
-  int sample6 = (int)(sampleNormal()*200)+2000;
+  int sample6 = floor(sampleNormal()*200)+2000;
   *pdata32++ = 0xf805405e + sample6;
 
 
@@ -344,16 +344,16 @@ INT read_trigger_event(char *pevent, INT off)
   *pdata720++ = 0x0;
   *pdata720++ = 0x13132f;
   
-  int pulse_position = (int)(sampleNormal()*80) + 200;
+  int pulse_position = floor(sampleNormal()*80) + 200;
   for(int j = 0; j < 2; j++){
 
     if (j==1) pulse_position+=  5;
-    int pulse_height = (int)(sampleNormal()*30) +200;  
+    int pulse_height = floor(sampleNormal()*30) +200;  
     pulse_height = pulse_height * (1.0 - ((double)pulse_position)/600.0);
 
     for(int i = 0; i < 504; i++){
       uint32_t word = 0;
-      uint32_t sample = 400 + (sampleNormal()*2);
+      uint32_t sample = 400 + floor(sampleNormal()*2);
       if(i == pulse_position) sample += 0.2 * pulse_height;
       if(i == pulse_position+1) sample += 0.8 * pulse_height;
       if(i == pulse_position+2) sample += 1.0 * pulse_height;
@@ -364,7 +364,7 @@ INT read_trigger_event(char *pevent, INT off)
       //std::cout << i << " " << pulse_position << " " << pulse_height << " " << sample << std::endl;
       word = sample;
       i++;
-      sample = 400 + (sampleNormal()*2);
+      sample = 400 + floor(sampleNormal()*2);
       if(i == pulse_position) sample += 0.2 * pulse_height;
       if(i == pulse_position+1) sample += 0.8 * pulse_height;
       if(i == pulse_position+2) sample += 1.0 * pulse_height;
