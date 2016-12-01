@@ -7,7 +7,7 @@ OSFLAGS  = -DOS_LINUX -Dextname
 CFLAGS   = -g -O2 -fPIC -Wall -Wuninitialized -I. -I$(MIDASSYS)/include
 CXXFLAGS = $(CFLAGS)
 
-LIBS = -lm -lz -lutil  -lnsl -lpthread -lrt  
+LIBS = -lm -lz -lutil   -lpthread   
 LIB_DIR         = $(MIDASSYS)/linux/lib
 
 # MIDAS library
@@ -27,10 +27,13 @@ ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lThread -Wl,-rpath,$(RO
 LIBS += $(ROOTGLIBS)
 endif
 
-all:: fesimdaq.exe 
+all:: fesimdaq.exe fesimdaq_v2.exe
 
 
 fesimdaq.exe: %.exe:   %.o 
+	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
+
+fesimdaq_v2.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
 
 feDTM.exe: %.exe:   %.o 
