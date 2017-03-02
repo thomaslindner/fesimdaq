@@ -7,7 +7,7 @@ OSFLAGS  = -DOS_LINUX -Dextname
 CFLAGS   = -g -O2 -fPIC -Wall -Wuninitialized -I. -I$(MIDASSYS)/include
 CXXFLAGS = $(CFLAGS)
 
-LIBS = -lm -lz -lutil   -lpthread   
+LIBS = -lm -lz -lutil   -lpthread -lssl -ldl -lrt 
 LIB_DIR         = $(MIDASSYS)/linux/lib
 
 # MIDAS library
@@ -35,6 +35,7 @@ fesimdaq.exe: %.exe:   %.o
 
 fesimdaq_v2.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
+
 
 feDTM.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)

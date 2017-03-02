@@ -151,22 +151,68 @@ NULL }
 
 SIMDAQSETTINGS_STR(simdaqsettings_str);
 
+
+struct SIMDAQSETTINGS {
+  char  comment[256];
+  INT id;   
+  INT family;
+  INT  enable;
+};
+
+void seq_callback(INT h, INT hseq, void *info)
+{
+
+}
+
 /*-- Frontend Init -------------------------------------------------*/
 INT frontend_init()
 {
 
 
-  
-  int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), TRUE);
-  printf("Status %i\n",status);
-  if (status == DB_STRUCT_MISMATCH) {
-    cm_msg(MERROR, "init_simdaqsettings", "Aborting on mismatching /Equipment/SIMDAQ/Settings");
-    cm_disconnect_experiment();
-    abort();
+  for(int i = 0; i < 400; i++){
+    printf("open record %i\n",i);
+    /*    const char *simdaqsettings_str = 
+      "[.]\n\
+Descrip = STRING : [256]\n\
+Parameter AAA = INT : 0\n\
+Parameter BB2 = INT : 0\n\
+Parameter CC22 = INT : 0";*/
+
+    char set_this_str[256];
+    sprintf(set_this_str,"[.]\n\
+Descrip = STRING : [256]\n\
+Parameter AAA = INT : 0\n\
+Parameter BB2 = INT : 0\n\
+Parameter CC22 = INT : 0");
+    
+    char namm[256];
+    sprintf(namm,"/Equipment/SIMDAQ/DFSettings_%i_DSFSFSD",i);
+    //int status = db_create_record(hDB, 0, namm, strcomb(simdaqsettings_str));
+    int status = db_create_record(hDB, 0, namm, set_this_str);
+    
+
+    HNDLE settings_handle_adc_;
+    status = db_find_key (hDB, 0, namm, &settings_handle_adc_);
+    int size = sizeof(SIMDAQSETTINGS);
+    
+    status = db_open_record(hDB, settings_handle_adc_, &simdaqsettings_str, size, MODE_READ, seq_callback, NULL);
+    
+    if (status != DB_SUCCESS){
+      cm_msg(MERROR,"SetBoardRecord","Couldn't create hotlink for %s. Return code: %d", "BLAH", status);
+      return status;
+    }
+
   }
 
+  printf("FFFF\n");
+  //char mystring[32];
+  //i/nt size = sizeof(mystring); 
+  //int status = db_get_value(hDB, 0,"/test2/mystring", &mystring, &size, TID_STRING, 
+  //                    FALSE);
+    
   cm_register_deferred_transition(TR_STOP, wait_end_cycle);
-   return SUCCESS;
+  printf("Success\n");
+  return SUCCESS;
 }
 
 
