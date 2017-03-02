@@ -27,7 +27,7 @@ ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lThread -Wl,-rpath,$(RO
 LIBS += $(ROOTGLIBS)
 endif
 
-all:: fesimdaq.exe fesimdaq_v2.exe
+all:: fesimdaq.exe fesimdaq_v2.exe struct_history_example.exe
 
 
 fesimdaq.exe: %.exe:   %.o 
@@ -36,12 +36,11 @@ fesimdaq.exe: %.exe:   %.o
 fesimdaq_v2.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
 
-
-feDTM.exe: %.exe:   %.o 
+struct_history_example.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
 
-fev1720sim.exe: %.exe:   %.o 
-	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
+
+
 
 %.o: %.cxx
 	$(CXX) $(CXXFLAGS) $(OSFLAGS) -c $<
