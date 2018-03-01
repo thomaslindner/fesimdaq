@@ -117,7 +117,7 @@ EQUIPMENT equipment[] = {
      1000,                    /* poll for 1000ms */
      0,                      /* stop run after this event limit */
      0,                      /* number of sub events */
-     0,                      /* don't log history */
+     1,                      /* don't log history */
      "", "", "",},
     read_trb3_event,      /* readout routine */
     },
