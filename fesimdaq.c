@@ -183,21 +183,42 @@ NULL }
 
 SIMDAQSETTINGS_STR(simdaqsettings_str);
 
+
+struct SIMDAQSETTINGS {
+  char  comment[256];
+  INT id;   
+  INT family;
+  INT  enable;
+};
+
+void seq_callback(INT h, INT hseq, void *info)
+{
+
+}
+
 /*-- Frontend Init -------------------------------------------------*/
 INT frontend_init()
 {
 
-  
   int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), TRUE);
   printf("Status %i\n",status);
   if (status == DB_STRUCT_MISMATCH) {
     cm_msg(MERROR, "init_simdaqsettings", "Aborting on mismatching /Equipment/SIMDAQ/Settings");
     cm_disconnect_experiment();
     abort();
+
+    
   }
 
+  printf("FFFF\n");
+  //char mystring[32];
+  //i/nt size = sizeof(mystring); 
+  //int status = db_get_value(hDB, 0,"/test2/mystring", &mystring, &size, TID_STRING, 
+  //                    FALSE);
+    
   cm_register_deferred_transition(TR_STOP, wait_end_cycle);
-   return SUCCESS;
+  printf("Success\n");
+  return SUCCESS;
 }
 
 
