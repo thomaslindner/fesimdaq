@@ -61,7 +61,25 @@ INT frontend_loop();
 
 INT read_trigger_event(char *pevent, INT off);
 INT read_scaler_event(char *pevent, INT off);
+  INT read_trb3_event(char *pevent, INT off){
 
+    /* init bank structure */
+    bk_init32(pevent);
+    
+    double *pdata32;
+    /* create structured ADC0 bank of double words (i.e. 4-byte words)  */
+    bk_create(pevent, "TEMP", TID_DOUBLE, (void **)&pdata32);
+    
+    *pdata32++ = 0.1;
+    *pdata32++ = 0.2;
+    *pdata32++ = 0.3;
+    *pdata32++ = 0.4;
+
+    
+    int size2 = bk_close(pevent, pdata32);
+    return bk_size(pevent);
+
+  }
 
 /*-- Equipment list ------------------------------------------------*/
 
@@ -88,7 +106,21 @@ EQUIPMENT equipment[] = {
      "", "", "",},
     read_trigger_event,      /* readout routine */
     },
-
+   {"SlowControl",               /* equipment name */
+    {1, 0,                   /* event ID, trigger mask */
+     "SYSTEM",               /* event buffer */
+     EQ_PERIODIC,              /* equipment type */
+     LAM_SOURCE(0, 0xFFFFFF),        /* event source crate 0, all stations */
+     "MIDAS",                /* format */
+     TRUE,                   /* enabled */
+     RO_ODB|RO_ALWAYS,           /* read only when running */
+     1000,                    /* poll for 1000ms */
+     0,                      /* stop run after this event limit */
+     0,                      /* number of sub events */
+     0,                      /* don't log history */
+     "", "", "",},
+    read_trb3_event,      /* readout routine */
+    },
    {""}
 };
 
@@ -129,7 +161,7 @@ BOOL wait_end_cycle(int transition, BOOL first)
  {
    if(first){
      std::cout << "Starting deferred transition" << std::endl;
-     nremaining = 10;
+     nremaining = 5;
    }
 
    if (finished_readout) {
@@ -154,7 +186,6 @@ SIMDAQSETTINGS_STR(simdaqsettings_str);
 /*-- Frontend Init -------------------------------------------------*/
 INT frontend_init()
 {
-
 
   
   int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), TRUE);
@@ -217,7 +248,7 @@ INT frontend_loop()
 {
    /* if frontend_call_loop is true, this routine gets called when
       the frontend is idle or once between every event */
-  usleep(10000);
+  usleep(1000);
   return SUCCESS;
 }
 
@@ -415,7 +446,7 @@ INT read_trigger_event(char *pevent, INT off)
   printf("End sleep. time %f\n", time);
   */
   
-  usleep(10000);
+  usleep(1000);
   return bk_size(pevent);
 }
 
