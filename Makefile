@@ -16,7 +16,7 @@ MIDASLIBS = $(MIDASSYS)/lib/libmidas.a
 # fix these for MacOS
 UNAME=$(shell uname)
 ifeq ($(UNAME),Darwin)
-MIDASLIBS = $(MIDASSYS)/build/libmidas.a  $(MIDASSYS)/build/libmfe.a
+MIDASLIBS = $(MIDASSYS)/lib/libmidas.a  $(MIDASSYS)/lib/libmfe.a
 LIB_DIR         = $(MIDASSYS)/darwin/lib
 endif
 
