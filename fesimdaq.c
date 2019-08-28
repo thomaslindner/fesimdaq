@@ -4,27 +4,25 @@ Example period frontend
 \********************************************************************/
 
 
+
 #include <vector>
 #include <stdio.h>
 #include <algorithm>
 #include <stdlib.h>
 #include "midas.h"
+#include "mfe.h"
 #include <stdint.h>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
 
-/* make frontend functions callable from the C framework */
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*-- Globals -------------------------------------------------------*/
 
 /* The frontend name (client name) as seen by other MIDAS clients   */
-char *frontend_name = "fesimdaq";
+const char* frontend_name = "fesimdaq";
 /* The frontend file name, don't change it */
-char *frontend_file_name = __FILE__;
+const char *frontend_file_name = __FILE__;
 
 /* frontend_loop is called periodically if this variable is TRUE    */
 BOOL frontend_call_loop = TRUE;
@@ -42,7 +40,7 @@ INT max_event_size_frag = 2 * 1024 * 1024;
 INT event_buffer_size = 20 * 1000000;
  void **info;
 char  strin[256];
-HNDLE hDB, hSet;
+HNDLE  hSet;
 
 
 
@@ -124,9 +122,6 @@ EQUIPMENT equipment[] = {
    {""}
 };
 
-#ifdef __cplusplus
-}
-#endif
 
 /********************************************************************\
               Callback routines for system transitions
@@ -283,7 +278,7 @@ INT frontend_loop()
 
 /*-- Trigger event routines ----------------------------------------*/
 // Not currently used for DCRC readout
-extern "C" { INT poll_event(INT source, INT count, BOOL test)
+INT poll_event(INT source, INT count, BOOL test)
 /* Polling routine for events. Returns TRUE if event
    is available. If test equals TRUE, don't return. The test
    flag is used to time the polling */
@@ -301,11 +296,11 @@ extern "C" { INT poll_event(INT source, INT count, BOOL test)
    usleep(1000);
    return 0;
 }
-}
+
 
 /*-- Interrupt configuration ---------------------------------------*/
 // This is not currently used by the DCRC readout
-extern "C" { INT interrupt_configure(INT cmd, INT source, POINTER_T adr)
+INT interrupt_configure(INT cmd, INT source, POINTER_T adr)
 {
    switch (cmd) {
    case CMD_INTERRUPT_ENABLE:
@@ -319,7 +314,7 @@ extern "C" { INT interrupt_configure(INT cmd, INT source, POINTER_T adr)
    }
    return SUCCESS;
 }
-}
+
 
 #include "math.h" // for RAND, and rand
 double sampleNormal() {

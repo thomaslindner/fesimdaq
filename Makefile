@@ -8,10 +8,10 @@ CFLAGS   = -g -O2 -fPIC -Wall -Wuninitialized -I. -I$(MIDASSYS)/include
 CXXFLAGS = $(CFLAGS)
 
 LIBS = -lm -lz -lutil   -lpthread -lssl -ldl -lrt 
-LIB_DIR         = $(MIDASSYS)/linux/lib
+LIB_DIR         = $(MIDASSYS)/lib
 
 # MIDAS library
-MIDASLIBS = $(MIDASSYS)/linux/lib/libmidas.a
+MIDASLIBS = $(MIDASSYS)/lib/libmidas.a
 
 # fix these for MacOS
 UNAME=$(shell uname)
@@ -27,7 +27,7 @@ ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lThread -Wl,-rpath,$(RO
 LIBS += $(ROOTGLIBS)
 endif
 
-all:: fesimdaq.exe fesimdaq_v2.exe struct_history_example.exe
+all:: fesimdaq.exe 
 
 
 fesimdaq.exe: %.exe:   %.o 
