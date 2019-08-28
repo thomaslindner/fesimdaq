@@ -7,7 +7,7 @@ OSFLAGS  = -DOS_LINUX -Dextname
 CFLAGS   = -g -O2 -fPIC -Wall -Wuninitialized -I. -I$(MIDASSYS)/include
 CXXFLAGS = $(CFLAGS)
 
-LIBS = -lm -lz -lutil   -lpthread -lssl -ldl -lrt 
+LIBS = -lm -lz -lutil   -lpthread -lssl -ldl  
 LIB_DIR         = $(MIDASSYS)/lib
 
 # MIDAS library
@@ -16,7 +16,7 @@ MIDASLIBS = $(MIDASSYS)/lib/libmidas.a
 # fix these for MacOS
 UNAME=$(shell uname)
 ifeq ($(UNAME),Darwin)
-MIDASLIBS = $(MIDASSYS)/darwin/lib/libmidas.a
+MIDASLIBS = $(MIDASSYS)/build/libmidas.a  $(MIDASSYS)/build/libmfe.a
 LIB_DIR         = $(MIDASSYS)/darwin/lib
 endif
 
@@ -31,7 +31,7 @@ all:: fesimdaq.exe
 
 
 fesimdaq.exe: %.exe:   %.o 
-	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
+	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS)  $(MIDASLIBS) $(LIBS)
 
 fesimdaq_v2.exe: %.exe:   %.o 
 	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
