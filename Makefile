@@ -1,54 +1,144 @@
-# Makefile
+#####################################################################
 #
-# $Id$
+#  Name:         Makefile
 #
-
-OSFLAGS  = -DOS_LINUX -Dextname
-CFLAGS   = -g -O2 -fPIC -Wall -Wuninitialized -I. -I$(MIDASSYS)/include
-CXXFLAGS = $(CFLAGS)
-
-LIBS = -lm -lz -lutil   -lpthread -lssl -ldl  
-LIB_DIR         = $(MIDASSYS)/lib
-
-# MIDAS library
-MIDASLIBS = $(MIDASSYS)/lib/libmidas.a
-
-# fix these for MacOS
-UNAME=$(shell uname)
-ifeq ($(UNAME),Darwin)
-MIDASLIBS = $(MIDASSYS)/lib/libmidas.a  $(MIDASSYS)/lib/libmfe.a
-LIB_DIR         = $(MIDASSYS)/darwin/lib
+#####################################################################
+#
+#--------------------------------------------------------------------
+# The MIDASSYS should be defined prior the use of this Makefile
+ifndef MIDASSYS
+missmidas::
+	@echo "...";
+	@echo "Missing definition of environment variable 'MIDASSYS' !";
+	@echo "...";
 endif
 
-# ROOT library
+#--------------------------------------------------------------------
+# The following lines contain specific switches for different UNIX
+# systems. Find the one which matches your OS and outcomment the 
+# lines below.
+
+#-----------------------------------------
+# This is for Linux
+ifeq ($(OSTYPE),Linux)
+OSTYPE = linux
+endif
+
+#ifeq ($(OSTYPE),linux)
+
+OS_DIR = linux-m64
+OSFLAGS = -DOS_LINUX
+CFLAGS = -g -O2 -Wall -fpermissive -std=c++11
+LIBS = -lm -lz -lutil -lnsl -lpthread -lrt -ldl
+#endif
+
+
+#-----------------------
+# MacOSX/Darwin is just a funny Linux
+#
+ifeq ($(OSTYPE),Darwin)
+OSTYPE = darwin
+endif
+
+ifeq ($(OSTYPE),darwin)
+OS_DIR = darwin
+FF = cc
+OSFLAGS = -DOS_LINUX -DOS_DARWIN -DHAVE_STRLCPY -DAbsoftUNIXFortran -fPIC -Wno-unused-function
+LIBS = -lpthread -lrt
+SPECIFIC_OS_PRG = $(BIN_DIR)/mlxspeaker
+NEED_STRLCPY=
+NEED_RANLIB=1
+NEED_SHLIB=
+NEED_RPATH=
+
+endif
+
+#-----------------------------------------
+# ROOT flags and libs
+#
 ifdef ROOTSYS
-CXXFLAGS += -DHAVE_ROOT -I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
-ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lThread -Wl,-rpath,$(ROOTSYS)/lib
-LIBS += $(ROOTGLIBS)
+ROOTCFLAGS := $(shell  $(ROOTSYS)/bin/root-config --cflags)
+ROOTCFLAGS += -DHAVE_ROOT -DUSE_ROOT
+ROOTLIBS   := $(shell  $(ROOTSYS)/bin/root-config --libs) -Wl,-rpath,$(ROOTSYS)/lib
+ROOTLIBS   += -lThread
+else
+missroot:
+	@echo "...";
+	@echo "Missing definition of environment variable 'ROOTSYS' !";
+	@echo "...";
 endif
+#-------------------------------------------------------------------
+# The following lines define directories. Adjust if necessary
+#
+MIDAS_INC = $(MIDASSYS)/include
+MIDAS_LIB = $(MIDASSYS)/lib
+MIDAS_SRC = $(MIDASSYS)/src
+MIDAS_DRV = $(MIDASSYS)/drivers/vme
 
-all:: fesimdaq.exe 
+# Hardware driver can be (camacnul, kcs2926, kcs2927, hyt1331)
+#
+DRIVERS =
+
+#-------------------------------------------------------------------
+# Frontend code name defaulted to frontend in this example.
+# comment out the line and run your own frontend as follow:
+# gmake UFE=my_frontend
+#
+UFE = fesimdaq
+
+####################################################################
+# Lines below here should not be edited
+####################################################################
+#
+# compiler
+CC   = g++
+CXX  = g++
+#
+# MIDAS library
+LIBMIDAS = -L$(MIDAS_LIB) -lmidas
+#
+#
+# All includes
+INCS = -I. -I$(MIDAS_INC) -I$(MIDAS_DRV) 
+all: $(UFE).exe  
 
 
-fesimdaq.exe: %.exe:   %.o 
-	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS)  $(MIDASLIBS) $(LIBS)
-
-fesimdaq_v2.exe: %.exe:   %.o 
-	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
-
-struct_history_example.exe: %.exe:   %.o 
-	$(CXX) -o $@ $(CFLAGS) $(OSFLAGS) $^ $(MIDASLIBS) $(LIB_DIR)/mfe.o $(MIDASLIBS) $(LIBS)
+feudp.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) feudp.o
+	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o feudp.exe feudp.o $(DRIVERS) \
+	$(MIDAS_LIB)/mfe.o  $(LIBMIDAS) $(LIBS)
 
 
+feodbxx_test.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) feodbxx_test.o
+	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o feodbxx_test.exe feodbxx_test.o $(DRIVERS) \
+	$(MIDAS_LIB)/mfe.o  $(LIBMIDAS) $(LIBS)
+
+feudp.o: feudp.cxx
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+
+feodbxx_test.o: feodbxx_test.cxx
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+
+$(UFE).exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) $(UFE).o
+	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o $(UFE).exe $(UFE).o $(DRIVERS) \
+	$(MIDAS_LIB)/mfe.o $(LIBMIDAS) $(LIBS)
+
+fesimdaq.o: fesimdaq.c
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+
+KOsocket.o: KOsocket.cxx
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+
+PMTControl.o: PMTControl.cxx
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 
-%.o: %.cxx
-	$(CXX) $(CXXFLAGS) $(OSFLAGS) -c $<
+$(MIDAS_LIB)/mfe.o:
+	@cd $(MIDASSYS) && make
 
-%.o: %.c
-	$(CXX) $(CXXFLAGS) $(OSFLAGS) -c $<
+# %.o: %.cxx
+# 	$(CXX) $(USERFLAGS) $(CFLAGS) $(OSFLAGS) $(INCS) -o $@ -c $<
 
 clean::
-	-rm -f *.o *.exe
+	rm -f *.exe *.o *~ \#*
 
-# end
+#end file

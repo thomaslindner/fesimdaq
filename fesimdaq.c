@@ -41,7 +41,7 @@ INT event_buffer_size = 20 * 1000000;
  void **info;
 char  strin[256];
 HNDLE  hSet;
-
+extern HNDLE hDB;
 
 
 
@@ -195,21 +195,6 @@ void seq_callback(INT h, INT hseq, void *info)
 INT frontend_init()
 {
 
-  int status = db_check_record(hDB, 0, "/Equipment/SIMDAQ/Settings", strcomb(simdaqsettings_str), TRUE);
-  printf("Status %i\n",status);
-  if (status == DB_STRUCT_MISMATCH) {
-    cm_msg(MERROR, "init_simdaqsettings", "Aborting on mismatching /Equipment/SIMDAQ/Settings");
-    cm_disconnect_experiment();
-    abort();
-
-    
-  }
-
-  printf("FFFF\n");
-  //char mystring[32];
-  //i/nt size = sizeof(mystring); 
-  //int status = db_get_value(hDB, 0,"/test2/mystring", &mystring, &size, TID_STRING, 
-  //                    FALSE);
     
   cm_register_deferred_transition(TR_STOP, wait_end_cycle);
   printf("Success\n");
