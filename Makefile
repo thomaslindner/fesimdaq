@@ -29,7 +29,7 @@ endif
 OS_DIR = linux-m64
 OSFLAGS = -DOS_LINUX
 CFLAGS = -g -O2 -Wall -fpermissive -std=c++11
-LIBS = -lm -lz -lutil -lnsl -lpthread -lrt -ldl
+LIBS = -lm -lz -lutil  -lpthread  -ldl
 #endif
 
 
@@ -99,8 +99,8 @@ LIBMIDAS = -L$(MIDAS_LIB) -lmidas
 #
 #
 # All includes
-INCS = -I. -I$(MIDAS_INC) -I$(MIDAS_DRV) 
-all: $(UFE).exe  
+INCS = -I. -I$(MIDAS_INC) -I$(MIDAS_DRV) -I$(MIDASSYS)/mvodb -I$(MIDASSYS)/mxml
+all: $(UFE).exe fesimdaq_tmfe.exe
 
 
 feudp.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) feudp.o
@@ -123,6 +123,13 @@ $(UFE).exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) $(UFE).o
 	$(MIDAS_LIB)/mfe.o $(LIBMIDAS) $(LIBS)
 
 fesimdaq.o: fesimdaq.c
+	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+
+fesimdaq_tmfe.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) fesimdaq_tmfe.o
+	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o fesimdaq_tmfe.exe fesimdaq_tmfe.o $(DRIVERS) \
+	$(LIBMIDAS) $(LIBS)
+
+fesimdaq_tmfe.o: fesimdaq_tmfe.cxx
 	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 KOsocket.o: KOsocket.cxx
