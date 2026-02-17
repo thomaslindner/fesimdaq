@@ -26,6 +26,9 @@ char *frontend_name = "fesimdaq";
 /* The frontend file name, don't change it */
 char *frontend_file_name = __FILE__;
 
+
+BOOL equipment_common_overwrite = FALSE;
+  
 /* frontend_loop is called periodically if this variable is TRUE    */
 BOOL frontend_call_loop = TRUE;
 
