@@ -7,7 +7,6 @@
 #--------------------------------------------------------------------
 # The MIDASSYS should be defined prior the use of this Makefile
 ifndef MIDASSYS
-missmidas::
 	@echo "...";
 	@echo "Missing definition of environment variable 'MIDASSYS' !";
 	@echo "...";
@@ -28,7 +27,7 @@ endif
 
 OS_DIR = linux-m64
 OSFLAGS = -DOS_LINUX
-CFLAGS = -g -O2 -Wall -fpermissive -std=c++11
+CXXFLAGS = -g -O2 -Wall -fpermissive -std=c++11
 LIBS = -lm -lz -lutil  -lpthread  -ldl
 #endif
 
@@ -56,17 +55,7 @@ endif
 #-----------------------------------------
 # ROOT flags and libs
 #
-ifdef ROOTSYS
-ROOTCFLAGS := $(shell  $(ROOTSYS)/bin/root-config --cflags)
-ROOTCFLAGS += -DHAVE_ROOT -DUSE_ROOT
-ROOTLIBS   := $(shell  $(ROOTSYS)/bin/root-config --libs) -Wl,-rpath,$(ROOTSYS)/lib
-ROOTLIBS   += -lThread
-else
-missroot:
-	@echo "...";
-	@echo "Missing definition of environment variable 'ROOTSYS' !";
-	@echo "...";
-endif
+
 #-------------------------------------------------------------------
 # The following lines define directories. Adjust if necessary
 #
@@ -99,51 +88,49 @@ LIBMIDAS = -L$(MIDAS_LIB) -lmidas
 #
 #
 # All includes
-INCS = -I. -I$(MIDAS_INC) -I$(MIDAS_DRV) -I$(MIDASSYS)/mvodb -I$(MIDASSYS)/mxml
+INCS = -I. -I$(MIDAS_INC) -I$(MIDAS_DRV) -I$(MIDASSYS)/mvodb -I$(MIDASSYS)/mxml -I$(MIDASSYS)/mjson
 all: $(UFE).exe fesimdaq_tmfe.exe
 
 
 feudp.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) feudp.o
-	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o feudp.exe feudp.o $(DRIVERS) \
+	$(CXX) $(CXXFLAGS) $(OSFLAGS) $(INCS) -o feudp.exe feudp.o $(DRIVERS) \
 	$(MIDAS_LIB)/mfe.o  $(LIBMIDAS) $(LIBS)
 
 
 feodbxx_test.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) feodbxx_test.o
-	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o feodbxx_test.exe feodbxx_test.o $(DRIVERS) \
+	$(CXX) $(CXXFLAGS) $(OSFLAGS) $(INCS) -o feodbxx_test.exe feodbxx_test.o $(DRIVERS) \
 	$(MIDAS_LIB)/mfe.o  $(LIBMIDAS) $(LIBS)
 
 feudp.o: feudp.cxx
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 feodbxx_test.o: feodbxx_test.cxx
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 $(UFE).exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) $(UFE).o
-	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o $(UFE).exe $(UFE).o $(DRIVERS) \
+	$(CXX) $(CXXFLAGS) $(OSFLAGS) $(INCS) -o $(UFE).exe $(UFE).o $(DRIVERS) \
 	$(MIDAS_LIB)/mfe.o $(LIBMIDAS) $(LIBS)
 
 fesimdaq.o: fesimdaq.c
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 fesimdaq_tmfe.exe: $(LIB) $(MIDAS_LIB)/mfe.o $(DRIVERS) fesimdaq_tmfe.o
-	$(CXX) $(CFLAGS) $(OSFLAGS) $(INCS) -o fesimdaq_tmfe.exe fesimdaq_tmfe.o $(DRIVERS) \
+	$(CXX) $(CXXFLAGS) $(OSFLAGS) $(INCS) -o fesimdaq_tmfe.exe fesimdaq_tmfe.o $(DRIVERS) \
 	$(LIBMIDAS) $(LIBS)
 
 fesimdaq_tmfe.o: fesimdaq_tmfe.cxx
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 KOsocket.o: KOsocket.cxx
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 PMTControl.o: PMTControl.cxx
-	$(CXX) $(CFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INCS) $(OSFLAGS) -o $@ -c $<
 
 
 $(MIDAS_LIB)/mfe.o:
 	@cd $(MIDASSYS) && make
 
-# %.o: %.cxx
-# 	$(CXX) $(USERFLAGS) $(CFLAGS) $(OSFLAGS) $(INCS) -o $@ -c $<
 
 clean::
 	rm -f *.exe *.o *~ \#*
